@@ -21,14 +21,13 @@ class Game:
         self.handle_events()
 
     def handle_events(self):
-        self.screen.onkey(self.snake.up, "w")
-        self.screen.onkey(self.snake.up, "up")
+        self.screen.onkey(self.snake.up, "Up")
         self.screen.onkey(self.snake.down, "s")
-        self.screen.onkey(self.snake.down, "down")
+        self.screen.onkey(self.snake.down, "Down")
         self.screen.onkey(self.snake.left, "a")
-        self.screen.onkey(self.snake.left, "left")
+        self.screen.onkey(self.snake.left, "Left")
         self.screen.onkey(self.snake.right, "d")
-        self.screen.onkey(self.snake.right, "right")
+        self.screen.onkey(self.snake.right, "Right")
 
     def run_game(self):
         while self.game_is_on:
