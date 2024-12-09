@@ -1,7 +1,25 @@
+import json
 from tkinter import Tk, Canvas, PhotoImage, Label, Entry, Button, messagebox
 from tkinter.constants import END
 from random import randint, shuffle, choice
 from pyperclip import copy
+
+
+# ---------------------------- SEARCH ------------------------------- #
+def find_password():
+    website = website_input.get()
+    try:
+        with open("data.json", "r") as file:
+            data = json.load(file)
+    except FileNotFoundError:
+        messagebox.showinfo(title="Error", message="No Data File Found.")
+    else:
+        if website in data:
+            email = data[website]["email"]
+            password = data[website]["password"]
+            messagebox.showinfo(title=website, message=f"Email: {email}\nPassword: {password}")
+        else:
+            messagebox.showinfo(title="Error", message=f"No details for {website} exists.")
 
 
 # ---------------------------- PASSWORD GENERATOR ------------------------------- #
@@ -36,6 +54,12 @@ def save():
     website = website_input.get()
     email = email_input.get()
     pwd = pass_input.get()
+    new_data = {
+        website: {
+            "email": email,
+            "password": pwd,
+        }
+    }
 
     if website == "" or email == "" or pwd == "":
         messagebox.showinfo(title="Oops", message="Please don't leave any fields empty!")
@@ -46,8 +70,20 @@ def save():
         )
 
         if is_ok:
-            with open("data.txt", "a") as file:
-                file.write(f"{website} | {email} | {pwd} \n")
+            try:
+                with open("data.json", "r") as file:
+                    data = json.load(file)
+            except FileNotFoundError:
+                with open("data.json", "w") as file:
+                    json.dump(new_data, file, indent=4)
+            else:
+                print(data)
+                data.update(new_data)
+                print(data)
+
+                with open("data.json", "w") as file:
+                    json.dump(data, file, indent=4)
+            finally:
                 website_input.delete(0, END)
                 pass_input.delete(0, END)
 
@@ -71,8 +107,8 @@ pass_label = Label(text="Password:")
 pass_label.grid(column=0, row=3)
 
 # Entries
-website_input = Entry(width=42)
-website_input.grid(column=1, row=1, columnspan=2)
+website_input = Entry(width=23)
+website_input.grid(column=1, row=1)
 email_input = Entry(width=42)
 email_input.insert(END, "test@gmail.com")
 email_input.grid(column=1, row=2, columnspan=2)
@@ -80,6 +116,8 @@ pass_input = Entry(width=23)
 pass_input.grid(column=1, row=3)
 
 # Buttons
+btn_search = Button(text="Search", width=15, command=find_password)
+btn_search.grid(column=2, row=1)
 btn_gen_pass = Button(text="Generate Password", command=generate_password)
 btn_gen_pass.grid(column=2, row=3)
 btn_add = Button(text="Add", width=40, command=save)
